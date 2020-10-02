@@ -13,17 +13,17 @@ function main() {
 
 
     Object.keys(experts).map((key) => experts[key])
-        .forEach(({pn, fullName, subjects}) => {
+        .forEach(({pn, fullName, subjects, email}) => {
             const formTitle = `тестовый Опрос ${pn}_${fullName}`
             const form = FormApp.create(formTitle);
 
-            const emailControl = form.addTextItem().setTitle('Адрес электронной почты');
             const emailValidation = FormApp.createTextValidation()
                 .setHelpText('Вы ввели неправильный Email')
                 .requireTextIsEmail()
                 .build();
 
-            emailControl
+            form.addTextItem()
+                .setTitle('Адрес электронной почты')
                 .setRequired(true)
                 .setHelpText('Это обязательный вопрос.')
                 .setValidation(emailValidation);
@@ -33,9 +33,19 @@ function main() {
                     form.addGridItem()
                         .setRequired(true)
                         .setTitle(question.text)
-                        .setRows(subjects.map<string>(({fullName}) => fullName))
-                        .setColumns(['1', '2', '3', '4', '5']);
+                        .setRows(subjects.map<string>(({fullName}) => fullName) || [])
+                        .setColumns(['1', '2', '3', '4', '5', 'Затрудняюсь ответить']);
                 })
+
+            const publishedUrl = form.getPublishedUrl();
+            const htmlBody = `
+                <div>
+                    <h1>Для Вас создан опрос!</h1>
+                    <p>Сссылка: <b>${publishedUrl}</b></p>
+                </div>
+            `;
+
+            GmailApp.sendEmail(email, 'Для Вас создан опрос!', '', {htmlBody})
 
         })
 
