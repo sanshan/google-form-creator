@@ -62,27 +62,29 @@ export default class PersonsFactory {
                 })
 
                 // Create Subjects
-                rows.forEach(({fullName, email, position, pn, subdivision, manager, isComplete, group}) => {
+                rows
+                    .filter((subject) => subject.expertEmail === expertEmail)
+                    .forEach(({fullName, email, position, pn, subdivision, manager, isComplete, group}) => {
 
-                    if (!subjects[email]) {
-                        const [surname, name, patronymic] = fullName.split(' ');
-                        subjects[email] = new SubjectPerson({
-                            surname,
-                            name,
-                            patronymic,
-                            email,
-                            position,
-                            pn,
-                            subdivision,
-                            manager,
-                            isComplete
-                        });
-                    }
+                        if (!subjects[email]) {
+                            const [surname, name, patronymic] = fullName.split(' ');
+                            subjects[email] = new SubjectPerson({
+                                surname,
+                                name,
+                                patronymic,
+                                email,
+                                position,
+                                pn,
+                                subdivision,
+                                manager,
+                                isComplete
+                            });
+                        }
 
-                    subjects[email].addGroup(group);
-                    experts[expertEmail].addSubject(subjects[email]);
+                        subjects[email].addGroup(group);
+                        experts[expertEmail].addSubject(subjects[email]);
 
-                })
+                    })
             }
         });
 
